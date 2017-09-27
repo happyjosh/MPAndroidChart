@@ -744,6 +744,18 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
     }
 
     /**
+     * Sets the maximum scale factor value to which can be zoomed out. 1f =
+     * fitScreen
+     *
+     * @param scaleX
+     * @param scaleY
+     */
+    public void setScaleMaxima(float scaleX, float scaleY) {
+        mViewPortHandler.setMaximumScaleX(scaleX);
+        mViewPortHandler.setMaximumScaleY(scaleY);
+    }
+
+    /**
      * Sets the size of the area (range on the x-axis) that should be maximum
      * visible at once (no further zooming out allowed). If this is e.g. set to
      * 10, no more than a range of 10 on the x-axis can be viewed at once without
@@ -1224,7 +1236,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
     /**
      * When enabled, the values will be clipped to contentRect,
-     *   otherwise they can bleed outside the content rect.
+     * otherwise they can bleed outside the content rect.
      *
      * @param enabled
      */
@@ -1234,7 +1246,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
     /**
      * When enabled, the values will be clipped to contentRect,
-     *   otherwise they can bleed outside the content rect.
+     * otherwise they can bleed outside the content rect.
      *
      * @return
      */
