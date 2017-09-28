@@ -1,4 +1,4 @@
-include 'MPChartLib'
+include 'MPChartLib', ':testwrapper'
 //include 'MPAndroidChart-Realm'
 include 'MPChartExample'
 //include ':MPChartLib-Realm'
