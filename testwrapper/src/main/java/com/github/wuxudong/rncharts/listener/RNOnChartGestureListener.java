@@ -1,26 +1,27 @@
 package com.github.wuxudong.rncharts.listener;
 
-import android.view.MotionEvent;
 import android.graphics.Matrix;
-
-import com.github.mikephil.charting.charts.Chart;
-
-import java.lang.ref.WeakReference;
+import android.util.Log;
+import android.view.MotionEvent;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
-import com.facebook.react.uimanager.PixelUtil;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.listener.ChartTouchListener;
+import com.github.mikephil.charting.listener.OnChartGestureListener;
+
+import java.lang.ref.WeakReference;
 
 /**
  * 实现了手势监听，调用JS（暂时未全部实现）
  * Created by jph on 2017/9/27.
  */
 public class RNOnChartGestureListener implements OnChartGestureListener {
+
+    private static final String TAG = RNOnChartGestureListener.class.getSimpleName();
 
     private WeakReference<Chart> mWeakChart;
 
@@ -61,49 +62,15 @@ public class RNOnChartGestureListener implements OnChartGestureListener {
     @Override
     public void onChartScale(MotionEvent me, float scaleX, float scaleY) {
         onMatrixChange();
-//        if (mWeakChart != null) {
-//            Chart chart = mWeakChart.get();
-//            WritableMap event = Arguments.createMap();
-//            event.putString("type", "onChartScale");
-//
-//            WritableMap values = Arguments.createMap();
-//            values.putDouble("aaa", scaleX);
-//            values.putDouble("bbb", scaleY);
-//            //中心点位置
-//            values.putDouble("ccc", PixelUtil.toDIPFromPixel(me.getX()));
-//            values.putDouble("ddd", PixelUtil.toDIPFromPixel(me.getY()));
-//            event.putMap("values", values);
-//
-//            ReactContext reactContext = (ReactContext) chart.getContext();
-//            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-//                    chart.getId(),
-//                    "topChange",
-//                    event);
-//        }
     }
 
     @Override
     public void onChartTranslate(MotionEvent me, float dX, float dY) {
         onMatrixChange();
-//        if (mWeakChart != null) {
-//            Chart chart = mWeakChart.get();
-//            WritableMap event = Arguments.createMap();
-//            event.putString("type", "onChartTranslate");
-//
-//            WritableMap values = Arguments.createMap();
-//            values.putDouble("distanceX", PixelUtil.toDIPFromPixel(dX));
-//            values.putDouble("distanceY", PixelUtil.toDIPFromPixel(dY));
-//            event.putMap("values", values);
-//
-//            ReactContext reactContext = (ReactContext) chart.getContext();
-//            reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
-//                    chart.getId(),
-//                    "topChange",
-//                    event);
-//        }
     }
 
     public void onMatrixChange() {
+        Log.i(TAG, "onMatrixChange");
         if (mWeakChart == null) {
             return;
         }
@@ -126,7 +93,7 @@ public class RNOnChartGestureListener implements OnChartGestureListener {
         ReactContext reactContext = (ReactContext) chart.getContext();
         reactContext.getJSModule(RCTEventEmitter.class).receiveEvent(
                 chart.getId(),
-                "topChange",
+                "topMatrixChange",
                 event);
     }
 }
