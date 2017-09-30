@@ -373,6 +373,15 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
                 .RIGHT));
     }
 
+    public void stopDeceleration() {
+        if (mChartTouchListener == null ||
+                !BarLineChartTouchListener.class.isInstance(mChartTouchListener)) {
+            return;
+        }
+
+        ((BarLineChartTouchListener) mChartTouchListener).stopDeceleration();
+    }
+
     protected void calculateLegendOffsets(RectF offsets) {
 
         offsets.left = 0.f;
