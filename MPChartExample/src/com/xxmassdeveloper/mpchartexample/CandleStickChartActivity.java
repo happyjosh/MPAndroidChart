@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
+import com.github.mikephil.charting.charts.FloatYLabel;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -63,25 +64,26 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         mChart.setDrawGridBackground(false);
 
         //TODO test
-        mChart.setScaleMinima(0.5f, 0.5f);
-        mChart.setScaleMaxima(5f, 5f);
+//        mChart.setScaleMinima(0.5f, 0.5f);
+//        mChart.setScaleMaxima(5f, 5f);
+        mChart.setRightFloatYLabel(new FloatYLabel(getApplicationContext()));
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
 
-        YAxis leftAxis = mChart.getAxisLeft();
-//        leftAxis.setEnabled(false);
-        leftAxis.setLabelCount(7, false);
-        leftAxis.setDrawGridLines(false);
-        leftAxis.setDrawAxisLine(false);
-
         YAxis rightAxis = mChart.getAxisRight();
-        rightAxis.setEnabled(false);
+//        rightAxis.setEnabled(false);
+        rightAxis.setLabelCount(7, false);
+        rightAxis.setDrawGridLines(false);
+        rightAxis.setDrawAxisLine(false);
+
+        YAxis leftAxis = mChart.getAxisLeft();
+        leftAxis.setEnabled(false);
 //        rightAxis.setStartAtZero(false);
 
         // setting data
-        mSeekBarX.setProgress(40);
+        mSeekBarX.setProgress(200);
         mSeekBarY.setProgress(100);
 
         mChart.getLegend().setEnabled(false);
@@ -202,7 +204,7 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         CandleDataSet set1 = new CandleDataSet(yVals1, "Data Set");
 
         set1.setDrawIcons(false);
-        set1.setAxisDependency(AxisDependency.LEFT);
+        set1.setAxisDependency(AxisDependency.RIGHT);
 //        set1.setColor(Color.rgb(80, 80, 80));
         set1.setShadowColor(Color.DKGRAY);
         set1.setShadowWidth(0.7f);

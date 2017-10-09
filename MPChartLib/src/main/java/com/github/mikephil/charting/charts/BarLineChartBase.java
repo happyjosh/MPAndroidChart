@@ -14,6 +14,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
@@ -278,6 +279,8 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
             Log.i(LOG_TAG, "Drawtime: " + drawtime + " ms, average: " + average + " ms, cycles: "
                     + drawCycles);
         }
+
+        drawRightFloatYLabel(canvas);
     }
 
     /**
@@ -1668,5 +1671,36 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         } else {
             mViewPortHandler.refresh(mViewPortHandler.getMatrixTouch(), this, true);
         }
+    }
+
+
+    //////////////////支持悬浮的label标注点
+
+    private FloatYLabel mRightFloatYLabel;
+
+    public void setRightFloatYLabel(FloatYLabel currentMarkView) {
+        mRightFloatYLabel = currentMarkView;
+    }
+
+    private void drawRightFloatYLabel(Canvas canvas) {
+        if (mRightFloatYLabel == null) {
+            return;
+        }
+
+        AxisBase axis = getAxisRight();
+        if (axis == null) {
+            return;
+        }
+
+        //TODO test
+        float value = 125;
+
+        String label = axis.getValueFormatter().getFormattedValue(value, axis);
+        mRightFloatYLabel.setText(label);
+        mRightFloatYLabel.refreshContent(null, null);
+
+        float posY = (float) getPixelForValues(0f, value, YAxis.AxisDependency.LEFT).y;
+        mRightFloatYLabel.draw(canvas, mViewPortHandler.contentRight(),
+                posY - mRightFloatYLabel.getHeight() / 2);
     }
 }
