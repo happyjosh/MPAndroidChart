@@ -1699,7 +1699,9 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
 
         String label = axis.getValueFormatter().getFormattedValue(mFloatYValue, axis);
-        mRightFloatYLabel.setText(label);
+        if (mRightFloatYLabel.getLabelText() != null) {
+            mRightFloatYLabel.getLabelText().setText(label);
+        }
         mRightFloatYLabel.refreshContent(null, null);
 
         float posY = (float) getPixelForValues(0f, mFloatYValue, YAxis.AxisDependency.LEFT).y;

@@ -13,7 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CandleStickChart;
-import com.github.mikephil.charting.charts.FloatYLabel;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -66,7 +65,7 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         //TODO test
 //        mChart.setScaleMinima(0.5f, 0.5f);
 //        mChart.setScaleMaxima(5f, 5f);
-        mChart.setRightFloatYLabel(new FloatYLabel(getApplicationContext()));
+//        mChart.setRightFloatYLabel(new FloatYLabel(getApplicationContext()));
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
