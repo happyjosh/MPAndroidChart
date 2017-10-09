@@ -15,8 +15,10 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
+import com.github.mikephil.charting.charts.FloatYLabel;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
+import com.github.wuxudong.rncharts.markers.MFloatYLabel;
 import com.github.wuxudong.rncharts.utils.BridgeUtils;
 
 import java.util.Map;
@@ -153,6 +155,31 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
             chart.setScaleMaxima((float) propMap.getDouble("scaleMaxX"),
                     (float) propMap.getDouble("scaleMaxY"));
         }
+    }
+
+    @ReactProp(name = "floatYLabel")
+    public void setFloatYLabel(BarLineChartBase chart, ReadableMap propMap) {
+        Log.i(TAG, "setFloatYLabel");
+        if (!BridgeUtils.validate(propMap, ReadableType.Boolean, "enabled") || !propMap.getBoolean("enabled")) {
+            chart.setRightFloatYLabel(null);
+            return;
+        }
+
+        FloatYLabel floatYLabel = new MFloatYLabel(chart.getContext());
+        floatYLabel.setChartView(chart);
+
+        if (BridgeUtils.validate(propMap, ReadableType.Number, "textColor")) {
+            floatYLabel.getLabelText().setTextColor(propMap.getInt("textColor"));
+        }
+        if (BridgeUtils.validate(propMap, ReadableType.Number, "textSize")) {
+            floatYLabel.getLabelText().setTextSize(propMap.getInt("textSize"));
+        }
+
+        if (BridgeUtils.validate(propMap, ReadableType.Number, "value")) {
+            chart.setFloatYValue((float) propMap.getDouble("value"));
+        }
+
+        chart.setRightFloatYLabel(floatYLabel);
     }
 
     @Nullable
