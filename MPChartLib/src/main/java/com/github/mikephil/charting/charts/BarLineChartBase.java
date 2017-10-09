@@ -1704,7 +1704,7 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         }
         mRightFloatYLabel.refreshContent(null, null);
 
-        float posY = (float) getPixelForValues(0f, mFloatYValue, YAxis.AxisDependency.LEFT).y;
+        float posY = (float) getPixelForValues(0f, mFloatYValue, AxisDependency.RIGHT).y;
         mRightFloatYLabel.draw(canvas, mViewPortHandler.contentRight(),
                 posY - mRightFloatYLabel.getHeight() / 2);
     }
