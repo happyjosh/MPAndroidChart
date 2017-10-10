@@ -1705,6 +1705,10 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         mRightFloatYLabel.refreshContent(null, null);
 
         float posY = (float) getPixelForValues(0f, mFloatYValue, AxisDependency.RIGHT).y;
+        if (!mViewPortHandler.isInBoundsY(posY)) {
+            //超出视图，不显示
+            return;
+        }
         mRightFloatYLabel.draw(canvas, mViewPortHandler.contentRight(),
                 posY - mRightFloatYLabel.getHeight() / 2);
     }
