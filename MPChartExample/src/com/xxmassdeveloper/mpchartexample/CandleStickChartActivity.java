@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.FloatLabel;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -24,7 +25,6 @@ import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
-import com.xxmassdeveloper.mpchartexample.custom.MFloatYLabel;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
 import java.util.ArrayList;
@@ -92,6 +92,12 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         rightAxis.setLabelCount(7, false);
         rightAxis.setDrawGridLines(false);
         rightAxis.setDrawAxisLine(false);
+        //TODO test
+        LimitLine limitLine = new LimitLine(120);
+        limitLine.setLineColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
+        limitLine.setLineWidth(2);
+        limitLine.enableDashedLine(20, 40, 0);
+        rightAxis.addLimitLine(limitLine);
 
         YAxis leftAxis = mChart.getAxisLeft();
         leftAxis.setEnabled(false);
