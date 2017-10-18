@@ -232,4 +232,24 @@ public class Highlight {
         return "Highlight, x: " + mX + ", y: " + mY + ", dataSetIndex: " + mDataSetIndex
                 + ", stackIndex (only stacked barentry): " + mStackIndex;
     }
+
+    private float mTouchYValue;
+
+    public float getTouchYValue() {
+        return mTouchYValue;
+    }
+
+    public void setTouchYValue(float touchYValue) {
+        this.mTouchYValue = touchYValue;
+    }
+
+    private float mTouchY;
+
+    public float getTouchY() {
+        return mTouchY;
+    }
+
+    public void setTouchY(float touchY) {
+        this.mTouchY = touchY;
+    }
 }

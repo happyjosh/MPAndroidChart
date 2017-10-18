@@ -4,6 +4,7 @@ package com.xxmassdeveloper.mpchartexample;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -66,6 +67,8 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
 //        mChart.setScaleMinima(0.5f, 0.5f);
 //        mChart.setScaleMaxima(5f, 5f);
 //        mChart.setRightFloatYLabel(new FloatYLabel(getApplicationContext()));
+
+        mChart.setHighlightPerDragEnabled(true);
 
         XAxis xAxis = mChart.getXAxis();
         xAxis.setPosition(XAxisPosition.BOTTOM);
@@ -213,6 +216,13 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         set1.setIncreasingPaintStyle(Paint.Style.STROKE);
         set1.setNeutralColor(Color.BLUE);
         //set1.setHighlightLineWidth(1f);
+
+        //TODO
+        set1.setHighlightEnabled(true);
+        set1.setHighlightLineWidth(2);
+        set1.enableDashedHighlightLine(5, 5, 0);
+        set1.setDrawHighlightIndicators(true);
+        set1.setHighLightColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
 
         CandleData data = new CandleData(set1);
 

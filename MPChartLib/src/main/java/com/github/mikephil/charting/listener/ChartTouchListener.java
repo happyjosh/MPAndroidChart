@@ -29,6 +29,7 @@ public abstract class ChartTouchListener<T extends Chart<?>> extends GestureDete
     protected static final int PINCH_ZOOM = 4;
     protected static final int POST_ZOOM = 5;
     protected static final int ROTATE = 6;
+    protected static final int HIGH_LIGHT = 7;
 
     /**
      * integer field that holds the current touch-state
