@@ -4,12 +4,12 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.highlight.Highlight;
-import com.github.mikephil.charting.utils.FSize;
 import com.github.mikephil.charting.utils.MPPointF;
 
 import java.lang.ref.WeakReference;
@@ -20,7 +20,7 @@ import java.lang.ref.WeakReference;
  *
  * @author Philipp Jahoda
  */
-public class MarkerView extends RelativeLayout implements IMarker {
+public class MarkerView extends FrameLayout implements IMarker {
 
     private MPPointF mOffset = new MPPointF();
     private MPPointF mOffset2 = new MPPointF();
@@ -37,20 +37,36 @@ public class MarkerView extends RelativeLayout implements IMarker {
         setupLayoutResource(layoutResource);
     }
 
+    public MarkerView(View v) {
+        super(v.getContext());
+        setupView(v);
+    }
+
+    public MarkerView(Context context) {
+        super(context);
+    }
+
     /**
      * Sets the layout resource for a custom MarkerView.
      *
      * @param layoutResource
      */
     private void setupLayoutResource(int layoutResource) {
+        View view = LayoutInflater.from(getContext()).inflate(layoutResource, this, false);
+        setupView(view);
+    }
 
-        View inflated = LayoutInflater.from(getContext()).inflate(layoutResource, this);
-
-        inflated.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
-        inflated.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+    public void setupView(View view) {
+        removeAllViews();
+        if (view == null) {
+            return;
+        }
+        addView(view);
+        view.setLayoutParams(new LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+        view.measure(MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
 
         // measure(getWidth(), getHeight());
-        inflated.layout(0, 0, inflated.getMeasuredWidth(), inflated.getMeasuredHeight());
+        view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
     }
 
     public void setOffset(MPPointF offset) {
@@ -92,13 +108,13 @@ public class MarkerView extends RelativeLayout implements IMarker {
         float height = getHeight();
 
         if (posX + mOffset2.x < 0) {
-            mOffset2.x = - posX;
+            mOffset2.x = -posX;
         } else if (chart != null && posX + width + mOffset2.x > chart.getWidth()) {
             mOffset2.x = chart.getWidth() - posX - width;
         }
 
         if (posY + mOffset2.y < 0) {
-            mOffset2.y = - posY;
+            mOffset2.y = -posY;
         } else if (chart != null && posY + height + mOffset2.y > chart.getHeight()) {
             mOffset2.y = chart.getHeight() - posY - height;
         }

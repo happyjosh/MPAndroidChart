@@ -13,7 +13,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.mikephil.charting.charts.CandleStickChart;
+import com.github.mikephil.charting.charts.CombinedChart;
+import com.github.mikephil.charting.charts.FloatLabel;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
@@ -21,7 +22,7 @@ import com.github.mikephil.charting.components.YAxis.AxisDependency;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
-import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.interfaces.datasets.IDataSet;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 
 public class CandleStickChartActivity extends DemoBase implements OnSeekBarChangeListener {
 
-    private CandleStickChart mChart;
+    private CombinedChart mChart;
     private SeekBar mSeekBarX, mSeekBarY;
     private TextView tvX, tvY;
 
@@ -49,7 +50,7 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         mSeekBarY = (SeekBar) findViewById(R.id.seekBar2);
         mSeekBarY.setOnSeekBarChangeListener(this);
 
-        mChart = (CandleStickChart) findViewById(R.id.chart1);
+        mChart = (CombinedChart) findViewById(R.id.chart1);
         mChart.setBackgroundColor(Color.WHITE);
 
         mChart.getDescription().setEnabled(false);
@@ -66,7 +67,18 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         //TODO test
 //        mChart.setScaleMinima(0.5f, 0.5f);
 //        mChart.setScaleMaxima(5f, 5f);
-//        mChart.setRightFloatYLabel(new FloatYLabel(getApplicationContext()));
+        mChart.setFloatYValue(100);
+        FloatLabel yLabel = new FloatLabel(getApplicationContext());
+        yLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
+        mChart.setRightFloatYLabel(yLabel);
+
+        //TODO test markView
+        FloatLabel leftLabel = new FloatLabel(getApplicationContext());
+        leftLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
+        mChart.setLeftMarkerView(leftLabel);
+        FloatLabel bottomLabel = new FloatLabel(getApplicationContext());
+        bottomLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
+        mChart.setBottomMarkerView(bottomLabel);
 
         mChart.setHighlightPerDragEnabled(true);
 
@@ -137,11 +149,11 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
                 break;
             }
             case R.id.actionToggleMakeShadowSameColorAsCandle: {
-                for (ICandleDataSet set : mChart.getData().getDataSets()) {
-                    //TODO: set.setShadowColorSameAsCandle(!set.getShadowColorSameAsCandle());
-                }
-
-                mChart.invalidate();
+//                for (ICandleDataSet set : mChart.getData().getDataSets()) {
+//                    //TODO: set.setShadowColorSameAsCandle(!set.getShadowColorSameAsCandle());
+//                }
+//
+//                mChart.invalidate();
                 break;
             }
             case R.id.animateX: {
@@ -220,13 +232,16 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         //TODO
         set1.setHighlightEnabled(true);
         set1.setHighlightLineWidth(2);
-        set1.enableDashedHighlightLine(5, 5, 0);
-        set1.setDrawHighlightIndicators(true);
-        set1.setHighLightColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
+//        set1.enableDashedHighlightLine(5, 5, 0);
+//        set1.setDrawHighlightIndicators(true);
+//        set1.setHighLightColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
 
         CandleData data = new CandleData(set1);
 
-        mChart.setData(data);
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(data);
+
+        mChart.setData(combinedData);
         mChart.invalidate();
     }
 

@@ -1676,14 +1676,14 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
 
     //////////////////支持悬浮的label标注点
 
-    private FloatYLabel mRightFloatYLabel;
+    private FloatLabel mRightFloatYLabel;
     private float mFloatYValue = 0f;
 
     public void setFloatYValue(float floatYValue) {
         mFloatYValue = floatYValue;
     }
 
-    public void setRightFloatYLabel(FloatYLabel currentMarkView) {
+    public void setRightFloatYLabel(FloatLabel currentMarkView) {
         mRightFloatYLabel = currentMarkView;
     }
 

@@ -3,6 +3,7 @@ package com.xxmassdeveloper.mpchartexample;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.WindowManager;
@@ -200,6 +201,10 @@ public class CombinedChartActivity extends DemoBase {
         set.setBarSpace(0.3f);
         set.setValueTextSize(10f);
         set.setDrawValues(false);
+
+        set.setHighlightEnabled(true);
+        set.setHighLightColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
+
         d.addDataSet(set);
 
         return d;

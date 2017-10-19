@@ -6,6 +6,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 
+import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BubbleData;
 import com.github.mikephil.charting.data.CandleData;
@@ -230,29 +231,34 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
         mDrawOrder = order;
     }
 
-    /**
-     * draws all MarkerViews on the highlighted positions
-     */
-    protected void drawMarkers(Canvas canvas) {
+    private FloatLabel mLeftMarkerView;
+    private FloatLabel mBottomMarkerView;
 
-        // if there is no marker view or drawing marker is disabled
-        if (mMarker == null || !isDrawMarkersEnabled() || !valuesToHighlight())
+    public void setLeftMarkerView(FloatLabel leftMarkerView) {
+        mLeftMarkerView = leftMarkerView;
+    }
+
+    public void setBottomMarkerView(FloatLabel bottomMarkerView) {
+        mBottomMarkerView = bottomMarkerView;
+    }
+
+    @Override
+    protected void drawMarkers(Canvas canvas) {
+//        super.drawMarkers(canvas);
+        if ((mLeftMarkerView == null && mBottomMarkerView == null) || !isDrawMarkersEnabled() ||
+                !valuesToHighlight())
             return;
 
         for (int i = 0; i < mIndicesToHighlight.length; i++) {
-
             Highlight highlight = mIndicesToHighlight[i];
 
-            IDataSet set = mData.getDataSetByHighlight(highlight);
+            IDataSet set = mData.getDataSetByIndex(highlight.getDataSetIndex());
 
-            Entry e = mData.getEntryForHighlight(highlight);
-            if (e == null)
-                continue;
-
+            Entry e = mData.getEntryForHighlight(mIndicesToHighlight[i]);
             int entryIndex = set.getEntryIndex(e);
 
             // make sure entry not null
-            if (entryIndex > set.getEntryCount() * mAnimator.getPhaseX())
+            if (e == null || entryIndex > set.getEntryCount() * mAnimator.getPhaseX())
                 continue;
 
             float[] pos = getMarkerPosition(highlight);
@@ -261,11 +267,29 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
             if (!mViewPortHandler.isInBounds(pos[0], pos[1]))
                 continue;
 
-            // callbacks to update the content
-            mMarker.refreshContent(e, highlight);
 
-            // draw the marker
-            mMarker.draw(canvas, pos[0], pos[1]);
+            if (null != mLeftMarkerView) {
+                float yValForHighlight = mIndicesToHighlight[i].getTouchYValue();
+                AxisBase axisY = getAxisRight();
+                String labelY = axisY.getValueFormatter().getFormattedValue(yValForHighlight, axisY);
+                mLeftMarkerView.getLabelText().setText(labelY);
+
+                mLeftMarkerView.refreshContent(e, mIndicesToHighlight[i]);
+
+                mLeftMarkerView.draw(canvas, mViewPortHandler.contentRight(), mIndicesToHighlight[i].getTouchY() - mLeftMarkerView.getHeight() / 2);
+
+            }
+
+            if (null != mBottomMarkerView) {
+                float xValForHighlight = mIndicesToHighlight[i].getX();
+                AxisBase axisX = getXAxis();
+                String labelX = axisX.getValueFormatter().getFormattedValue(xValForHighlight, axisX);
+                mBottomMarkerView.getLabelText().setText(labelX);
+
+                mBottomMarkerView.refreshContent(e, mIndicesToHighlight[i]);
+
+                mBottomMarkerView.draw(canvas, pos[0] - mBottomMarkerView.getWidth() / 2, mViewPortHandler.contentBottom());
+            }
         }
     }
 }
