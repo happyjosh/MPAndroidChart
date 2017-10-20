@@ -11,16 +11,15 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.common.MapBuilder;
-import com.facebook.react.uimanager.PixelUtil;
 import com.facebook.react.uimanager.annotations.ReactProp;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 import com.github.mikephil.charting.charts.BarLineChartBase;
 import com.github.mikephil.charting.charts.Chart;
-import com.github.mikephil.charting.charts.FloatYLabel;
+import com.github.mikephil.charting.charts.FloatLabel;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
-import com.github.wuxudong.rncharts.markers.MFloatYLabel;
 import com.github.wuxudong.rncharts.utils.BridgeUtils;
+import com.github.wuxudong.rncharts.utils.FloatLabelUtil;
 
 import java.util.Map;
 
@@ -161,45 +160,17 @@ public abstract class BarLineChartBaseManager<T extends BarLineChartBase, U exte
     @ReactProp(name = "floatYLabel")
     public void setFloatYLabel(BarLineChartBase chart, ReadableMap propMap) {
         Log.i(TAG, "setFloatYLabel");
-        if (!BridgeUtils.validate(propMap, ReadableType.Boolean, "enabled") || !propMap.getBoolean("enabled")) {
+        if (!FloatLabelUtil.isEnabled(propMap)) {
             chart.setRightFloatYLabel(null);
             return;
         }
 
-        FloatYLabel floatYLabel = new MFloatYLabel(chart.getContext());
-        floatYLabel.setChartView(chart);
-
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "textColor")) {
-            floatYLabel.getLabelText().setTextColor(propMap.getInt("textColor"));
-        }
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "textSize")) {
-            floatYLabel.getLabelText().setTextSize(propMap.getInt("textSize"));
-        }
+        FloatLabel floatLabel = FloatLabelUtil.bridgeFloatLabel(chart, propMap);
 
         if (BridgeUtils.validate(propMap, ReadableType.Number, "value")) {
             chart.setFloatYValue((float) propMap.getDouble("value"));
         }
-
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "backgroundColor")) {
-            floatYLabel.getLabelText().setBackgroundColor(propMap.getInt("backgroundColor"));
-        }
-
-        int paddingLeft = 0, paddingTop = 0, paddingRight = 0, paddingBottom = 0;
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "paddingLeft")) {
-            paddingLeft = (int) PixelUtil.toPixelFromDIP(propMap.getDouble("paddingLeft"));
-        }
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "paddingTop")) {
-            paddingTop = (int) PixelUtil.toPixelFromDIP(propMap.getDouble("paddingTop"));
-        }
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "paddingRight")) {
-            paddingRight = (int) PixelUtil.toPixelFromDIP(propMap.getDouble("paddingRight"));
-        }
-        if (BridgeUtils.validate(propMap, ReadableType.Number, "paddingBottom")) {
-            paddingBottom = (int) PixelUtil.toPixelFromDIP(propMap.getDouble("paddingBottom"));
-        }
-        floatYLabel.getLabelText().setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
-
-        chart.setRightFloatYLabel(floatYLabel);
+        chart.setRightFloatYLabel(floatLabel);
     }
 
     @Nullable
