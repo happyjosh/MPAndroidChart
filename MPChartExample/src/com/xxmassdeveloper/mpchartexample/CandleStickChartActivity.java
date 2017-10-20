@@ -75,10 +75,10 @@ public class CandleStickChartActivity extends DemoBase implements OnSeekBarChang
         //TODO test markView
         FloatLabel leftLabel = new FloatLabel(getApplicationContext());
         leftLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
-        mChart.setLeftMarkerView(leftLabel);
+        mChart.setRightSelectFloatLabel(leftLabel);
         FloatLabel bottomLabel = new FloatLabel(getApplicationContext());
         bottomLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
-        mChart.setBottomMarkerView(bottomLabel);
+        mChart.setBottomSelectFloatLabel(bottomLabel);
 
         mChart.setHighlightPerDragEnabled(true);
 

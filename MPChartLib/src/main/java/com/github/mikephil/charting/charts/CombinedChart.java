@@ -231,21 +231,21 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
         mDrawOrder = order;
     }
 
-    private FloatLabel mLeftMarkerView;
-    private FloatLabel mBottomMarkerView;
+    private FloatLabel mRightSelectFloatLabel;
+    private FloatLabel mBottomSelectFloatLabel;
 
-    public void setLeftMarkerView(FloatLabel leftMarkerView) {
-        mLeftMarkerView = leftMarkerView;
+    public void setRightSelectFloatLabel(FloatLabel rightSelectFloatLabel) {
+        mRightSelectFloatLabel = rightSelectFloatLabel;
     }
 
-    public void setBottomMarkerView(FloatLabel bottomMarkerView) {
-        mBottomMarkerView = bottomMarkerView;
+    public void setBottomSelectFloatLabel(FloatLabel bottomSelectFloatLabel) {
+        mBottomSelectFloatLabel = bottomSelectFloatLabel;
     }
 
     @Override
     protected void drawMarkers(Canvas canvas) {
 //        super.drawMarkers(canvas);
-        if ((mLeftMarkerView == null && mBottomMarkerView == null) || !isDrawMarkersEnabled() ||
+        if ((mRightSelectFloatLabel == null && mBottomSelectFloatLabel == null) || !isDrawMarkersEnabled() ||
                 !valuesToHighlight())
             return;
 
@@ -268,27 +268,27 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
                 continue;
 
 
-            if (null != mLeftMarkerView) {
+            if (null != mRightSelectFloatLabel) {
                 float yValForHighlight = mIndicesToHighlight[i].getTouchYValue();
                 AxisBase axisY = getAxisRight();
                 String labelY = axisY.getValueFormatter().getFormattedValue(yValForHighlight, axisY);
-                mLeftMarkerView.getLabelText().setText(labelY);
+                mRightSelectFloatLabel.getLabelText().setText(labelY);
 
-                mLeftMarkerView.refreshContent(e, mIndicesToHighlight[i]);
+                mRightSelectFloatLabel.refreshContent(e, mIndicesToHighlight[i]);
 
-                mLeftMarkerView.draw(canvas, mViewPortHandler.contentRight(), mIndicesToHighlight[i].getTouchY() - mLeftMarkerView.getHeight() / 2);
+                mRightSelectFloatLabel.draw(canvas, mViewPortHandler.contentRight(), mIndicesToHighlight[i].getTouchY() - mRightSelectFloatLabel.getHeight() / 2);
 
             }
 
-            if (null != mBottomMarkerView) {
+            if (null != mBottomSelectFloatLabel) {
                 float xValForHighlight = mIndicesToHighlight[i].getX();
                 AxisBase axisX = getXAxis();
                 String labelX = axisX.getValueFormatter().getFormattedValue(xValForHighlight, axisX);
-                mBottomMarkerView.getLabelText().setText(labelX);
+                mBottomSelectFloatLabel.getLabelText().setText(labelX);
 
-                mBottomMarkerView.refreshContent(e, mIndicesToHighlight[i]);
+                mBottomSelectFloatLabel.refreshContent(e, mIndicesToHighlight[i]);
 
-                mBottomMarkerView.draw(canvas, pos[0] - mBottomMarkerView.getWidth() / 2, mViewPortHandler.contentBottom());
+                mBottomSelectFloatLabel.draw(canvas, pos[0] - mBottomSelectFloatLabel.getWidth() / 2, mViewPortHandler.contentBottom());
             }
         }
     }
