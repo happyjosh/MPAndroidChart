@@ -320,7 +320,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
     @Override
     public void endAction(MotionEvent me) {
         super.endAction(me);
-        mChart.highlightValue(null);
+        mChart.highlightValue(null, true);
     }
 
     /**
@@ -626,7 +626,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         //取消单击高亮改为长按
-        mChart.highlightValue(null);
+        mChart.highlightValue(null, true);
 //
 //        mLastGesture = ChartGesture.SINGLE_TAP;
 //

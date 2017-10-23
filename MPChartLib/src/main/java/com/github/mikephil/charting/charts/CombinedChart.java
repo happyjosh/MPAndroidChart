@@ -254,7 +254,7 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
 
             IDataSet set = mData.getDataSetByIndex(highlight.getDataSetIndex());
 
-            Entry e = mData.getEntryForHighlight(mIndicesToHighlight[i]);
+            Entry e = mData.getEntryForHighlight(highlight);
             int entryIndex = set.getEntryIndex(e);
 
             // make sure entry not null
@@ -264,30 +264,28 @@ public class CombinedChart extends BarLineChartBase<CombinedData> implements Com
             float[] pos = getMarkerPosition(highlight);
 
             // check bounds
-            if (!mViewPortHandler.isInBounds(pos[0], pos[1]))
-                continue;
+//            if (!mViewPortHandler.isInBounds(pos[0], pos[1]))
+//                continue;
 
 
-            if (null != mRightSelectFloatLabel) {
-                float yValForHighlight = mIndicesToHighlight[i].getTouchYValue();
+            if (null != mRightSelectFloatLabel && mViewPortHandler.isInBoundsY(pos[1])) {
+                float yValForHighlight = highlight.getTouchYValue();
                 AxisBase axisY = getAxisRight();
                 String labelY = axisY.getValueFormatter().getFormattedValue(yValForHighlight, axisY);
                 mRightSelectFloatLabel.getLabelText().setText(labelY);
 
-                mRightSelectFloatLabel.refreshContent(e, mIndicesToHighlight[i]);
-
-                mRightSelectFloatLabel.draw(canvas, mViewPortHandler.contentRight(), mIndicesToHighlight[i].getTouchY() - mRightSelectFloatLabel.getHeight() / 2);
+                mRightSelectFloatLabel.refreshContent(e, highlight);
+                mRightSelectFloatLabel.draw(canvas, mViewPortHandler.contentRight(), highlight.getTouchY() - mRightSelectFloatLabel.getHeight() / 2);
 
             }
 
-            if (null != mBottomSelectFloatLabel) {
-                float xValForHighlight = mIndicesToHighlight[i].getX();
+            if (null != mBottomSelectFloatLabel && mViewPortHandler.isInBoundsX(pos[0])) {
+                float xValForHighlight = highlight.getX();
                 AxisBase axisX = getXAxis();
                 String labelX = axisX.getValueFormatter().getFormattedValue(xValForHighlight, axisX);
                 mBottomSelectFloatLabel.getLabelText().setText(labelX);
 
-                mBottomSelectFloatLabel.refreshContent(e, mIndicesToHighlight[i]);
-
+                mBottomSelectFloatLabel.refreshContent(e, highlight);
                 mBottomSelectFloatLabel.draw(canvas, pos[0] - mBottomSelectFloatLabel.getWidth() / 2, mViewPortHandler.contentBottom());
             }
         }

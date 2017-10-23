@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.view.Menu;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -16,15 +15,17 @@ import com.github.mikephil.charting.charts.FloatLabel;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
+import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.Utils;
 import com.xxmassdeveloper.mpchartexample.notimportant.DemoBase;
 
@@ -33,17 +34,15 @@ import java.util.List;
 
 public class TestCombinedChartActivity extends DemoBase {
 
-    private CombinedChart mChart;
+    private CombinedChart mChart1;
     private CombinedChart mChart2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_test_combine);
 
-        mChart = (CombinedChart) findViewById(R.id.chart1);
+        mChart1 = (CombinedChart) findViewById(R.id.chart1);
         mChart2 = (CombinedChart) findViewById(R.id.chart2);
 
 
@@ -53,6 +52,8 @@ public class TestCombinedChartActivity extends DemoBase {
         initData();
 
         linkMove();
+
+        linkSelect();
     }
 
     @Override
@@ -65,9 +66,9 @@ public class TestCombinedChartActivity extends DemoBase {
      * 设置两个图表联动
      */
     private void linkMove() {
-        float lineLeft = mChart.getViewPortHandler().offsetLeft();
+        float lineLeft = mChart1.getViewPortHandler().offsetLeft();
         float barLeft = mChart2.getViewPortHandler().offsetLeft();
-        float lineRight = mChart.getViewPortHandler().offsetRight();
+        float lineRight = mChart1.getViewPortHandler().offsetRight();
         float barRight = mChart2.getViewPortHandler().offsetRight();
         float offsetLeft, offsetRight;
  /*注：setExtraLeft...函数是针对图表相对位置计算，比如A表offLeftA=20dp,B表offLeftB=30dp,则A.setExtraLeftOffset(10),并不是30，还有注意单位转换*/
@@ -76,7 +77,7 @@ public class TestCombinedChartActivity extends DemoBase {
             mChart2.setExtraLeftOffset(offsetLeft);
         } else {
             offsetLeft = Utils.convertPixelsToDp(barLeft - lineLeft);
-            mChart.setExtraLeftOffset(offsetLeft);
+            mChart1.setExtraLeftOffset(offsetLeft);
         }
   /*注：setExtraRight...函数是针对图表绝对位置计算，比如A表offRightA=20dp,B表offRightB=30dp,则A.setExtraLeftOffset(30),并不是10，还有注意单位转换*/
         if (barRight < lineRight) {
@@ -84,50 +85,127 @@ public class TestCombinedChartActivity extends DemoBase {
             mChart2.setExtraRightOffset(offsetRight);
         } else {
             offsetRight = Utils.convertPixelsToDp(barRight - lineRight);
-            mChart.setExtraRightOffset(offsetRight);
+            mChart1.setExtraRightOffset(offsetRight);
         }
 
-        mChart.setOnChartGestureListener(new TestOnChartGestureListener(mChart, mChart2));
-        mChart2.setOnChartGestureListener(new TestOnChartGestureListener(mChart2, mChart));
+        mChart1.setOnChartGestureListener(new TestOnChartGestureListener(mChart1, mChart2));
+        mChart2.setOnChartGestureListener(new TestOnChartGestureListener(mChart2, mChart1));
+    }
+
+    /**
+     * 选中状态联动
+     */
+    private void linkSelect() {
+        mChart1.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                float x = h.getX();
+                float y = h.getY();
+                float touchY = h.getTouchY();
+                int dataIndex = h.getDataIndex();
+                int dataSetIndex = h.getDataSetIndex();
+                float manualYOffset = mChart1.getHeight() + Utils.convertDpToPixel(0);//表2和表1Y方向的layout偏差
+
+                syncHighlightChart(mChart2, x, y, touchY, dataIndex,
+                        dataSetIndex, manualYOffset);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                mChart2.highlightValue(null);
+            }
+        });
+        mChart2.setOnChartValueSelectedListener(new OnChartValueSelectedListener() {
+            @Override
+            public void onValueSelected(Entry e, Highlight h) {
+                float x = h.getX();
+                float y = h.getY();
+                float touchY = h.getTouchY();
+                int dataIndex = h.getDataIndex();
+                int dataSetIndex = h.getDataSetIndex();
+                float manualYOffset = -(mChart1.getHeight() + Utils.convertDpToPixel(0));//表2和表1Y方向的layout偏差
+
+                syncHighlightChart(mChart1, x, y, touchY, dataIndex,
+                        dataSetIndex, manualYOffset);
+            }
+
+            @Override
+            public void onNothingSelected() {
+                mChart1.highlightValue(null);
+            }
+        });
+
+    }
+
+    /**
+     * 根据其他关联图表的选中高亮信息来手动高亮选中
+     *
+     * @param chart         需要操作的图表
+     * @param x             关联图表的高亮信息Hightlight.x
+     * @param y             关联图表的高亮信息Hightlight.u
+     * @param touchY        关联图表的高亮信息Hightlight.touchY
+     * @param dataIndex     关联图表的高亮信息Hightlight.dataIndex
+     * @param dataSetIndex  关联图表的高亮信息Hightlight.dataSetIndex
+     * @param manualYOffset 当前图表和关联图表的Y坐标差值
+     */
+    private void syncHighlightChart(Chart chart, float x, float y, float touchY, int dataIndex,
+                                    int dataSetIndex, float manualYOffset) {
+        float newTouchY = touchY - manualYOffset;
+        Highlight highlight = new Highlight(x, y, dataSetIndex);
+        highlight.setDataIndex(dataIndex);
+        Highlight h1 = chart.getHighlightByTouchPoint(x, newTouchY);
+        highlight.setTouchY(newTouchY);
+        if (null == h1) {
+            highlight.setTouchYValue(0);
+        } else {
+            highlight.setTouchYValue(h1.getTouchYValue());
+        }
+        chart.highlightValues(new Highlight[]{highlight});
+    }
+
+    private void setSelectMark(CombinedChart chart, boolean showBottom) {
+        FloatLabel rightSelectLabel = new FloatLabel(getApplicationContext());
+        rightSelectLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
+        chart.setRightSelectFloatLabel(rightSelectLabel);
+
+        if (showBottom) {
+            FloatLabel bottomSelectLabel = new FloatLabel(getApplicationContext());
+            bottomSelectLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
+            chart.setBottomSelectFloatLabel(bottomSelectLabel);
+        }
+
+        chart.setHighlightPerDragEnabled(true);
     }
 
     private void configChart1() {
-        mChart.setBackgroundColor(Color.WHITE);
+        mChart1.setBackgroundColor(Color.WHITE);
 
-        mChart.getDescription().setEnabled(false);
+        mChart1.getDescription().setEnabled(false);
 
         // if more than 60 entries are displayed in the chart, no values will be
         // drawn
-        mChart.setMaxVisibleValueCount(60);
+        mChart1.setMaxVisibleValueCount(60);
 
         // scaling can now only be done on x- and y-axis separately
-        mChart.setPinchZoom(false);
+        mChart1.setPinchZoom(false);
 
-        mChart.setDrawGridBackground(false);
+        mChart1.setDrawGridBackground(false);
 
         //TODO test
-//        mChart.setScaleMinima(0.5f, 0.5f);
-//        mChart.setScaleMaxima(5f, 5f);
-        mChart.setFloatYValue(100);
+//        mChart1.setScaleMinima(0.5f, 0.5f);
+//        mChart1.setScaleMaxima(5f, 5f);
+        mChart1.setFloatYValue(100);
         FloatLabel yLabel = new FloatLabel(getApplicationContext());
         yLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
-        mChart.setRightFloatYLabel(yLabel);
+        mChart1.setRightFloatYLabel(yLabel);
 
-        //TODO test markView
-        FloatLabel leftLabel = new FloatLabel(getApplicationContext());
-        leftLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
-        mChart.setLeftMarkerView(leftLabel);
-        FloatLabel bottomLabel = new FloatLabel(getApplicationContext());
-        bottomLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
-        mChart.setBottomMarkerView(bottomLabel);
+        setSelectMark(mChart1, true);
 
-        mChart.setHighlightPerDragEnabled(true);
-
-        XAxis xAxis = mChart.getXAxis();
+        XAxis xAxis = mChart1.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
 
-        YAxis rightAxis = mChart.getAxisRight();
+        YAxis rightAxis = mChart1.getAxisRight();
 //        rightAxis.setEnabled(false);
         rightAxis.setLabelCount(7, false);
         rightAxis.setDrawGridLines(false);
@@ -139,16 +217,16 @@ public class TestCombinedChartActivity extends DemoBase {
         limitLine.enableDashedLine(20, 40, 0);
         rightAxis.addLimitLine(limitLine);
 
-        YAxis leftAxis = mChart.getAxisLeft();
+        YAxis leftAxis = mChart1.getAxisLeft();
         leftAxis.setEnabled(false);
 //        rightAxis.setStartAtZero(false);
 
-        mChart.getLegend().setEnabled(false);
+        mChart1.getLegend().setEnabled(false);
     }
 
     private void initData() {
         List<CandleEntry> chart1List = new ArrayList<CandleEntry>();
-        List<BarEntry> chart2List = new ArrayList<BarEntry>();
+        List<Entry> chart2List = new ArrayList<Entry>();
 
         for (int i = 0; i < 100; i++) {
             float mult = (50 + 1);
@@ -169,7 +247,7 @@ public class TestCombinedChartActivity extends DemoBase {
                     even ? val - close : val + close,
                     getResources().getDrawable(R.drawable.star)
             ));
-            chart2List.add(new BarEntry(i, close));
+            chart2List.add(new Entry(i, close));
         }
 
         initChart1Data(chart1List);
@@ -192,6 +270,8 @@ public class TestCombinedChartActivity extends DemoBase {
 
         YAxis leftAxis = mChart2.getAxisLeft();
         leftAxis.setEnabled(false);
+
+        setSelectMark(mChart2, false);
 
     }
 
@@ -224,14 +304,17 @@ public class TestCombinedChartActivity extends DemoBase {
         CombinedData combinedData = new CombinedData();
         combinedData.setData(data);
 
-        mChart.setData(combinedData);
-        mChart.invalidate();
+        mChart1.setData(combinedData);
+        mChart1.invalidate();
     }
 
-    private void initChart2Data(List<BarEntry> chart2List) {
-        BarDataSet barDataSet = new BarDataSet(chart2List, "BarDataSet");
+    private void initChart2Data(List<Entry> chart2List) {
+        LineDataSet dataset = new LineDataSet(chart2List, "BarDataSet");
+        //TODO
+        dataset.setHighlightEnabled(true);
+        dataset.setHighlightLineWidth(2);
 
-        BarData data = new BarData(barDataSet);
+        LineData data = new LineData(dataset);
 
         CombinedData combinedData = new CombinedData();
         combinedData.setData(data);

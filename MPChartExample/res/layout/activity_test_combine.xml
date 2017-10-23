@@ -11,6 +11,7 @@
         android:layout_above="@+id/seekBar1"
         android:layout_weight="2"/>
 
+
     <com.github.mikephil.charting.charts.CombinedChart
         android:id="@+id/chart2"
         android:layout_width="match_parent"

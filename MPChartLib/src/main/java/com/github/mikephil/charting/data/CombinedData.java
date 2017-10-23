@@ -55,7 +55,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
     @Override
     public void calcMinMax() {
 
-        if(mDataSets == null){
+        if (mDataSets == null) {
             mDataSets = new ArrayList<>();
         }
         mDataSets.clear();
@@ -191,7 +191,7 @@ public class CombinedData extends BarLineScatterCandleBubbleData<IBarLineScatter
         List<Entry> entries = data.getDataSetByIndex(highlight.getDataSetIndex())
                 .getEntriesForXValue(highlight.getX());
         for (Entry entry : entries)
-            if (entry.getY() == highlight.getY() ||
+            if (entry.getY() == highlight.getY() || entry.getX() == highlight.getX() ||
                     Float.isNaN(highlight.getY()))
                 return entry;
 
