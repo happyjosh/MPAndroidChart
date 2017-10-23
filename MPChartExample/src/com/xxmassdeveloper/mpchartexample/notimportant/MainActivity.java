@@ -20,7 +20,6 @@ import com.xxmassdeveloper.mpchartexample.BarChartActivityMultiDataset;
 import com.xxmassdeveloper.mpchartexample.BarChartActivitySinus;
 import com.xxmassdeveloper.mpchartexample.BarChartPositiveNegative;
 import com.xxmassdeveloper.mpchartexample.BubbleChartActivity;
-import com.xxmassdeveloper.mpchartexample.CandleStickChartActivity;
 import com.xxmassdeveloper.mpchartexample.CombinedChartActivity;
 import com.xxmassdeveloper.mpchartexample.CubicLineChartActivity;
 import com.xxmassdeveloper.mpchartexample.DynamicalAddingActivity;
@@ -45,6 +44,7 @@ import com.xxmassdeveloper.mpchartexample.ScatterChartActivity;
 import com.xxmassdeveloper.mpchartexample.ScrollViewActivity;
 import com.xxmassdeveloper.mpchartexample.StackedBarActivity;
 import com.xxmassdeveloper.mpchartexample.StackedBarActivityNegative;
+import com.xxmassdeveloper.mpchartexample.TestCombinedChartActivity;
 import com.xxmassdeveloper.mpchartexample.fragments.SimpleChartDemo;
 import com.xxmassdeveloper.mpchartexample.realm.RealmMainActivity;
 
@@ -235,7 +235,8 @@ public class MainActivity extends Activity implements OnItemClickListener {
                 startActivity(i);
                 break;
             case 18:
-                i = new Intent(this, CandleStickChartActivity.class);
+                //TODO
+                i = new Intent(this, TestCombinedChartActivity.class);
                 startActivity(i);
                 break;
             case 19:
