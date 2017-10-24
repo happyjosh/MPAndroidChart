@@ -15,6 +15,9 @@ import com.github.mikephil.charting.charts.FloatLabel;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
@@ -227,6 +230,7 @@ public class TestCombinedChartActivity extends DemoBase {
     private void initData() {
         List<CandleEntry> chart1List = new ArrayList<CandleEntry>();
         List<Entry> chart2List = new ArrayList<Entry>();
+        List<BarEntry> barList = new ArrayList<>();
 
         for (int i = 0; i < 100; i++) {
             float mult = (50 + 1);
@@ -248,10 +252,11 @@ public class TestCombinedChartActivity extends DemoBase {
                     getResources().getDrawable(R.drawable.star)
             ));
             chart2List.add(new Entry(i, close));
+            barList.add(new BarEntry(i, close));
         }
 
         initChart1Data(chart1List);
-        initChart2Data(chart2List);
+        initChart2Data(chart2List, barList);
     }
 
     private void configChart2() {
@@ -308,16 +313,21 @@ public class TestCombinedChartActivity extends DemoBase {
         mChart1.invalidate();
     }
 
-    private void initChart2Data(List<Entry> chart2List) {
-        LineDataSet dataset = new LineDataSet(chart2List, "BarDataSet");
+    private void initChart2Data(List<Entry> chart2List, List<BarEntry> barList) {
+        LineDataSet dataset = new LineDataSet(chart2List, "LineDataSet");
         //TODO
         dataset.setHighlightEnabled(true);
         dataset.setHighlightLineWidth(2);
 
         LineData data = new LineData(dataset);
 
+        BarDataSet barDataSet = new BarDataSet(barList, "BarDataSet");
+        barDataSet.setHighlightEnabled(false);
+        BarData barData = new BarData(barDataSet);
+
         CombinedData combinedData = new CombinedData();
         combinedData.setData(data);
+        combinedData.setData(barData);
 
         mChart2.setData(combinedData);
         mChart2.invalidate();

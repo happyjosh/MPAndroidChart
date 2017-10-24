@@ -39,9 +39,11 @@ public class ChartHighlighter<T extends BarLineScatterCandleBubbleDataProvider> 
 
         Highlight high = getHighlightForX(xVal, x, y);
 
-        high.setTouchY(y);
-        float yValue = getYValue(y);
-        high.setTouchYValue(yValue);
+        if (high != null) {
+            high.setTouchY(y);
+            float yValue = getYValue(y);
+            high.setTouchYValue(yValue);
+        }
         return high;
     }
 
