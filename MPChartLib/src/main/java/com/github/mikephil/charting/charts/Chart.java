@@ -994,6 +994,10 @@ public abstract class Chart<T extends ChartData<? extends IDataSet<? extends Ent
         this.mSelectionListener = l;
     }
 
+    public OnChartValueSelectedListener getOnChartValueSelectedListener() {
+        return mSelectionListener;
+    }
+
     /**
      * Sets a gesture-listener for the chart for custom callbacks when executing
      * gestures on the chart surface.
