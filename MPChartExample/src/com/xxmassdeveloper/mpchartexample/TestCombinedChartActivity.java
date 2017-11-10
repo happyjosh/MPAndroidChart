@@ -2,12 +2,14 @@
 package com.xxmassdeveloper.mpchartexample;
 
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MotionEvent;
+import android.view.View;
 
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
@@ -22,10 +24,12 @@ import com.github.mikephil.charting.data.CandleData;
 import com.github.mikephil.charting.data.CandleDataSet;
 import com.github.mikephil.charting.data.CandleEntry;
 import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
@@ -36,6 +40,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TestCombinedChartActivity extends DemoBase {
+
+    private static final String TAG = "TestCombinedChart";
+
+    private static final int X_AXIS_LABEL_COUNT = 6;
+    private static final int DATA_COUNT_ONE_GRID = 5;
+    private static final int DATA_COUNT_ONE_GRID_MIN = 3;
+    private static final int DATA_COUNT_ONE_GRID_MAX = 10;
 
     private CombinedChart mChart1;
     private CombinedChart mChart2;
@@ -50,13 +61,29 @@ public class TestCombinedChartActivity extends DemoBase {
 
 
         configChart1();
-        configChart2();
+//        configChart2();
 
         initData();
 
-        linkMove();
+        mChart1.setOnChartGestureListener(new TestOnChartGestureListener(mChart1, mChart2));
 
-        linkSelect();
+//        linkMove();
+//
+//        linkSelect();
+
+        findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadMore();
+            }
+        });
+
+        findViewById(R.id.zoom).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mChart1.getXAxis().setAxisMinimum(-0.5f);
+            }
+        });
     }
 
     @Override
@@ -173,6 +200,7 @@ public class TestCombinedChartActivity extends DemoBase {
 
         if (showBottom) {
             FloatLabel bottomSelectLabel = new FloatLabel(getApplicationContext());
+            bottomSelectLabel.setPadding(20, 20, 20, 20);
             bottomSelectLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.red));
             chart.setBottomSelectFloatLabel(bottomSelectLabel);
         }
@@ -198,6 +226,7 @@ public class TestCombinedChartActivity extends DemoBase {
 //        mChart1.setScaleMinima(0.5f, 0.5f);
 //        mChart1.setScaleMaxima(5f, 5f);
         mChart1.setFloatYValue(100);
+        mChart1.setAutoScaleMinMaxEnabled(true);
         FloatLabel yLabel = new FloatLabel(getApplicationContext());
         yLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
         mChart1.setRightFloatYLabel(yLabel);
@@ -205,8 +234,12 @@ public class TestCombinedChartActivity extends DemoBase {
         setSelectMark(mChart1, true);
 
         XAxis xAxis = mChart1.getXAxis();
+        xAxis.setLabelCount(X_AXIS_LABEL_COUNT);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
+        xAxis.setAvoidFirstLastClipping(true);
+        xAxis.setSpaceMin(0.5f);
+        xAxis.setSpaceMax(0.5f);
 
         YAxis rightAxis = mChart1.getAxisRight();
 //        rightAxis.setEnabled(false);
@@ -256,7 +289,7 @@ public class TestCombinedChartActivity extends DemoBase {
         }
 
         initChart1Data(chart1List);
-        initChart2Data(chart2List, barList);
+//        initChart2Data(chart2List, barList);
     }
 
     private void configChart2() {
@@ -310,7 +343,23 @@ public class TestCombinedChartActivity extends DemoBase {
         combinedData.setData(data);
 
         mChart1.setData(combinedData);
-        mChart1.invalidate();
+
+        final int count = chart1List.size();
+
+        zoom(count, count);
+
+        mChart1.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                float minScale = (float) count / (X_AXIS_LABEL_COUNT * DATA_COUNT_ONE_GRID_MAX);
+                float maxScale = (float) count / (X_AXIS_LABEL_COUNT * DATA_COUNT_ONE_GRID_MIN);
+                mChart1.setScaleMinima(minScale, 1);
+                mChart1.setScaleMaxima(maxScale, 1);
+            }
+        }, 500);
+
+//        mChart1.moveViewTo(0, 0, YAxis.AxisDependency.RIGHT);
+//        mChart1.invalidate();
     }
 
     private void initChart2Data(List<Entry> chart2List, List<BarEntry> barList) {
@@ -333,7 +382,111 @@ public class TestCombinedChartActivity extends DemoBase {
         mChart2.invalidate();
     }
 
+    private void zoom(int count, float moveIndex) {
+
+        float zoom = (float) count / (X_AXIS_LABEL_COUNT * DATA_COUNT_ONE_GRID);
+//        float xZoom = ((float) count) / (6 * 10);
+        Log.i("zoom-------", "" + zoom);
+        mChart1.zoom(zoom, 0, moveIndex, 0, YAxis.AxisDependency.RIGHT);
+//        mChart1.moveViewTo(count, 1f, YAxis.AxisDependency.RIGHT);
+    }
+
+    Handler mHandler = new Handler();
+
+    private void delayLoadMore() {
+        mHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loadMore();
+            }
+        }, 600);
+    }
+
+    private void loadMore() {
+
+        float oldMin = mChart1.getXAxis().getAxisMinimum();
+        float oldMinX = oldMin + mChart1.getXAxis().getSpaceMin();
+
+        mChart1.stopDeceleration();
+        mChart1.clearAllViewportJobs();
+
+        CombinedData combinedData = mChart1.getData();
+        CandleData candleData = combinedData.getCandleData();
+        DataSet candleDataSet = (DataSet) candleData.getDataSetByIndex(0);
+
+        float oldCount = candleDataSet.getEntryCount();
+
+        float oldScaleMinX = mChart1.getViewPortHandler().getMinScaleX();
+        float oldScaleMaxX = mChart1.getViewPortHandler().getMaxScaleX();
+        float oldScaleX = mChart1.getScaleX();
+
+        List<CandleEntry> list = new ArrayList<>(candleDataSet.getValues());
+        candleDataSet.getValues().clear();
+        for (float i = oldMinX - 100; i < oldMinX; i++) {
+            float mult = (50 + 1);
+            float val = (float) (Math.random() * 40) + mult;
+
+            float high = (float) (Math.random() * 9) + 8f;
+            float low = (float) (Math.random() * 9) + 8f;
+
+            float open = (float) (Math.random() * 6) + 1f;
+            float close = (float) (Math.random() * 6) + 1f;
+
+            boolean even = i % 2 == 0;
+            float x = i;
+
+            candleDataSet.addEntry(new CandleEntry(
+                    x, val + high,
+                    val - low,
+                    even ? val + open : val - open,
+                    even ? val - close : val + close,
+                    getResources().getDrawable(R.drawable.star)));
+        }
+
+        for (CandleEntry entry :
+                list) {
+            candleDataSet.addEntry(entry);
+        }
+
+        candleDataSet.notifyDataSetChanged();
+        candleData.notifyDataChanged();
+        combinedData.notifyDataChanged();
+        mChart1.notifyDataSetChanged();
+
+//        mChart1.setScaleMinima(8, 1);
+
+        float ratio = (float) candleDataSet.getEntryCount() / oldCount;
+
+        float newScaleMinX = ratio * oldScaleMinX;
+        float newScaleMaxX = ratio * oldScaleMaxX;
+        float newScaleX = ratio * oldScaleX;
+
+//        float zoom = (float) candleDataSet.getEntryCount() / (X_AXIS_LABEL_COUNT * DATA_COUNT_ONE_GRID);
+        mChart1.setScaleMinima(newScaleX, 1);//避免数据修改后改变缩放表现
+        mChart1.moveViewTo(oldMin, 0, YAxis.AxisDependency.RIGHT);
+
+        mChart1.setScaleMinima(newScaleMinX, 1);
+        mChart1.setScaleMaxima(newScaleMaxX, 1);
+//        zoom(candleDataSet.getEntryCount(), oldMin);
+    }
+
+    private int iii = 5;
+
+    private void change() {
+        CombinedData combinedData = mChart1.getData();
+        CandleData candleData = combinedData.getCandleData();
+        ICandleDataSet candleDataSet = candleData.getDataSetByIndex(0);
+        CandleEntry entry = candleDataSet.getEntriesForXValue(99).get(0);
+        entry.setOpen(entry.getOpen() + iii);
+        iii = -iii;
+        candleData.notifyDataChanged();
+        combinedData.notifyDataChanged();
+        mChart1.notifyDataSetChanged();
+        mChart1.invalidate();
+    }
+
     class TestOnChartGestureListener implements OnChartGestureListener {
+        private boolean mIsCanLoad = false;
 
         private Chart chart1, chart2;
 
@@ -345,12 +498,28 @@ public class TestCombinedChartActivity extends DemoBase {
 
         @Override
         public void onChartGestureStart(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
-
+            mIsCanLoad = false;
         }
 
         @Override
         public void onChartGestureEnd(MotionEvent me, ChartTouchListener.ChartGesture lastPerformedGesture) {
+            if (!CombinedChart.class.isInstance(chart1)) {
+                return;
+            }
 
+            CombinedChart loadChart = (CombinedChart) chart1;
+
+            float leftX = loadChart.getLowestVisibleX();    //获取可视区域中，显示在x轴最右边的index
+
+            if (lastPerformedGesture == ChartTouchListener.ChartGesture.DRAG) {
+                mIsCanLoad = true;
+                if (leftX <= loadChart.getXAxis().getAxisMinimum()) {
+                    mIsCanLoad = false;
+                    //加载更多数据的操作
+                    Log.i(TAG, "onChartGestureEnd: loadloadloadload1" + leftX);
+                    loadMore();
+                }
+            }
         }
 
         @Override
@@ -381,38 +550,51 @@ public class TestCombinedChartActivity extends DemoBase {
         @Override
         public void onChartTranslate(MotionEvent me, float dX, float dY) {
             onMatrixChange();
+
+            if (!CombinedChart.class.isInstance(chart1)) {
+                return;
+            }
+
+            CombinedChart loadChart = (CombinedChart) chart1;
+            if (mIsCanLoad) {
+                float leftX = loadChart.getLowestVisibleX();     //获取可视区域中，显示在x轴最右边的index
+                if (leftX <= loadChart.getXAxis().getAxisMinimum()) {
+                    mIsCanLoad = false;
+                    //加载更多数据的操作
+                    Log.i(TAG, "onChartGestureEnd: loadloadloadload2" + leftX);
+                    loadMore();
+                }
+            }
         }
 
         public void onMatrixChange() {
 
 
-            Matrix srcMatrix;
-            float[] srcVals = new float[9];
-
-            srcMatrix = chart1.getViewPortHandler().getMatrixTouch();
-            srcMatrix.getValues(srcVals);
-            srcMatrix.getValues(srcVals);
-
-            // apply X axis scaling and position to dst charts:
-            Matrix dstMatrix;
-            float[] dstVals = new float[9];
-            dstMatrix = chart2.getViewPortHandler().getMatrixTouch();
-            dstMatrix.getValues(dstVals);
-
-            dstVals[Matrix.MSCALE_X] = srcVals[Matrix.MSCALE_X];
-            dstVals[Matrix.MSKEW_X] = srcVals[Matrix.MSKEW_X];
-            dstVals[Matrix.MTRANS_X] = srcVals[Matrix.MTRANS_X];
-            dstVals[Matrix.MSKEW_Y] = srcVals[Matrix.MSKEW_Y];
-            dstVals[Matrix.MSCALE_Y] = srcVals[Matrix.MSCALE_Y];
-            dstVals[Matrix.MTRANS_Y] = srcVals[Matrix.MTRANS_Y];
-            dstVals[Matrix.MPERSP_0] = srcVals[Matrix.MPERSP_0];
-            dstVals[Matrix.MPERSP_1] = srcVals[Matrix.MPERSP_1];
-            dstVals[Matrix.MPERSP_2] = srcVals[Matrix.MPERSP_2];
-
-            dstMatrix.setValues(dstVals);
-            chart2.getViewPortHandler().refresh(dstMatrix, chart2, true);
+//            Matrix srcMatrix;
+//            float[] srcVals = new float[9];
+//
+//            srcMatrix = chart1.getViewPortHandler().getMatrixTouch();
+//            srcMatrix.getValues(srcVals);
+//            srcMatrix.getValues(srcVals);
+//
+//            // apply X axis scaling and position to dst charts:
+//            Matrix dstMatrix;
+//            float[] dstVals = new float[9];
+//            dstMatrix = chart2.getViewPortHandler().getMatrixTouch();
+//            dstMatrix.getValues(dstVals);
+//
+//            dstVals[Matrix.MSCALE_X] = srcVals[Matrix.MSCALE_X];
+//            dstVals[Matrix.MSKEW_X] = srcVals[Matrix.MSKEW_X];
+//            dstVals[Matrix.MTRANS_X] = srcVals[Matrix.MTRANS_X];
+//            dstVals[Matrix.MSKEW_Y] = srcVals[Matrix.MSKEW_Y];
+//            dstVals[Matrix.MSCALE_Y] = srcVals[Matrix.MSCALE_Y];
+//            dstVals[Matrix.MTRANS_Y] = srcVals[Matrix.MTRANS_Y];
+//            dstVals[Matrix.MPERSP_0] = srcVals[Matrix.MPERSP_0];
+//            dstVals[Matrix.MPERSP_1] = srcVals[Matrix.MPERSP_1];
+//            dstVals[Matrix.MPERSP_2] = srcVals[Matrix.MPERSP_2];
+//
+//            dstMatrix.setValues(dstVals);
+//            chart2.getViewPortHandler().refresh(dstMatrix, chart2, true);
         }
     }
-
-
 }

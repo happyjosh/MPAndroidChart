@@ -12,6 +12,19 @@
         android:layout_weight="2"/>
 
 
+    <Button
+        android:id="@+id/test"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="TTTTTTTTTTTTT"/>
+
+
+    <Button
+        android:id="@+id/zoom"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ZOooooooooom"/>
+
     <com.github.mikephil.charting.charts.CombinedChart
         android:id="@+id/chart2"
         android:layout_width="match_parent"
