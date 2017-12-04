@@ -269,7 +269,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
 
                 mTouchMode = NONE;
                 mChart.enableScroll();
-                mIsHighlight = true;
+                mIsHighlight = false;
 
                 if (mVelocityTracker != null) {
                     mVelocityTracker.recycle();
@@ -288,6 +288,7 @@ public class BarLineChartTouchListener extends ChartTouchListener<BarLineChartBa
             case MotionEvent.ACTION_CANCEL:
 
                 mTouchMode = NONE;
+                mIsHighlight = false;
                 endAction(event);
                 break;
         }
