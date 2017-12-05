@@ -420,7 +420,8 @@ public class TestCombinedChartActivity extends DemoBase {
         float oldScaleMaxX = mChart1.getViewPortHandler().getMaxScaleX();
         float oldScaleX = mChart1.getScaleX();
 
-        List<CandleEntry> list = new ArrayList<>(candleDataSet.getValues());
+        List<CandleEntry> oldList = new ArrayList<>(candleDataSet.getValues());
+        List<CandleEntry> newList = new ArrayList<>();
         candleDataSet.getValues().clear();
         for (float i = oldMinX - 100; i < oldMinX; i++) {
             float mult = (50 + 1);
@@ -435,7 +436,7 @@ public class TestCombinedChartActivity extends DemoBase {
             boolean even = i % 2 == 0;
             float x = i;
 
-            candleDataSet.addEntry(new CandleEntry(
+            newList.add(new CandleEntry(
                     x, val + high,
                     val - low,
                     even ? val + open : val - open,
@@ -443,10 +444,14 @@ public class TestCombinedChartActivity extends DemoBase {
                     getResources().getDrawable(R.drawable.star)));
         }
 
-        for (CandleEntry entry :
-                list) {
-            candleDataSet.addEntry(entry);
-        }
+//        for (CandleEntry entry :
+//                oldList) {
+//            candleDataSet.addEntry(entry);
+//        }
+
+        candleDataSet.getValues().clear();
+        candleDataSet.getValues().addAll(newList);
+        candleDataSet.getValues().addAll(oldList);
 
         candleDataSet.notifyDataSetChanged();
         candleData.notifyDataChanged();
