@@ -28,6 +28,7 @@ import com.github.mikephil.charting.data.DataSet;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
 import com.github.mikephil.charting.interfaces.datasets.ICandleDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
@@ -360,6 +361,12 @@ public class TestCombinedChartActivity extends DemoBase {
 
 //        mChart1.moveViewTo(0, 0, YAxis.AxisDependency.RIGHT);
 //        mChart1.invalidate();
+
+        String[] values = new String[chart1List.size()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = "x" + (values.length - i);
+        }
+        mChart1.getXAxis().setValueFormatter(new IndexAxisValueFormatter(values));
     }
 
     private void initChart2Data(List<Entry> chart2List, List<BarEntry> barList) {
@@ -404,8 +411,8 @@ public class TestCombinedChartActivity extends DemoBase {
 
     private void loadMore() {
 
-        float oldMin = mChart1.getXAxis().getAxisMinimum();
-        float oldMinX = oldMin + mChart1.getXAxis().getSpaceMin();
+//        float oldMin = mChart1.getXAxis().getAxisMinimum();
+//        float oldMinX = oldMin + mChart1.getXAxis().getSpaceMin();
 
         mChart1.stopDeceleration();
         mChart1.clearAllViewportJobs();
@@ -422,8 +429,7 @@ public class TestCombinedChartActivity extends DemoBase {
 
         List<CandleEntry> oldList = new ArrayList<>(candleDataSet.getValues());
         List<CandleEntry> newList = new ArrayList<>();
-        candleDataSet.getValues().clear();
-        for (float i = oldMinX - 100; i < oldMinX; i++) {
+        for (float i = 0; i < 100; i++) {
             float mult = (50 + 1);
             float val = (float) (Math.random() * 40) + mult;
 
@@ -449,6 +455,12 @@ public class TestCombinedChartActivity extends DemoBase {
 //            candleDataSet.addEntry(entry);
 //        }
 
+        //重新设置原有数据的x值
+        int newCount = newList.size();
+        for (int i = 0; i < oldList.size(); i++) {
+            oldList.get(i).setX(newCount + i);
+        }
+
         candleDataSet.getValues().clear();
         candleDataSet.getValues().addAll(newList);
         candleDataSet.getValues().addAll(oldList);
@@ -468,11 +480,17 @@ public class TestCombinedChartActivity extends DemoBase {
         float newScaleX = ratio * oldScaleX;
 
         mChart1.setScaleMinima(newScaleX, 1);//避免数据修改后改变缩放表现
-        mChart1.moveViewTo(oldMin, 0, YAxis.AxisDependency.RIGHT);
+        mChart1.moveViewTo(newCount, 0, YAxis.AxisDependency.RIGHT);
 
         mChart1.setScaleMinima(newScaleMinX, 1);
         mChart1.setScaleMaxima(newScaleMaxX, 1);
 //        zoom(candleDataSet.getEntryCount(), oldMin);
+
+        String[] values = new String[candleDataSet.getEntryCount()];
+        for (int i = 0; i < values.length; i++) {
+            values[i] = "x" + (values.length - i);
+        }
+        mChart1.getXAxis().setValueFormatter(new IndexAxisValueFormatter(values));
     }
 
     private int iii = 5;
