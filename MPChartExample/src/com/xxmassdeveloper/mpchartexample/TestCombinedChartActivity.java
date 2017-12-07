@@ -470,7 +470,6 @@ public class TestCombinedChartActivity extends DemoBase {
         combinedData.notifyDataChanged();
         mChart1.notifyDataSetChanged();
 
-//        mChart1.setScaleMinima(8, 1);
 
         //通过前后数据的比例，计算出新的缩放参数
         float ratio = (float) candleDataSet.getEntryCount() / oldCount;
@@ -480,7 +479,7 @@ public class TestCombinedChartActivity extends DemoBase {
         float newScaleX = ratio * oldScaleX;
 
         mChart1.setScaleMinima(newScaleX, 1);//避免数据修改后改变缩放表现
-        mChart1.moveViewTo(newCount, 0, YAxis.AxisDependency.RIGHT);
+        mChart1.moveViewTo(newCount - mChart1.getXAxis().getSpaceMin(), 0, YAxis.AxisDependency.RIGHT);
 
         mChart1.setScaleMinima(newScaleMinX, 1);
         mChart1.setScaleMaxima(newScaleMaxX, 1);
