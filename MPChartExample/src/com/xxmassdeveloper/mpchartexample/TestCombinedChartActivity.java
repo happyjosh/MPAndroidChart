@@ -75,7 +75,7 @@ public class TestCombinedChartActivity extends DemoBase {
         findViewById(R.id.test).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loadMore();
+                delayLoadMore();
             }
         });
 
@@ -401,6 +401,10 @@ public class TestCombinedChartActivity extends DemoBase {
     Handler mHandler = new Handler();
 
     private void delayLoadMore() {
+
+//        mChart1.stopDeceleration();
+//        mChart1.clearAllViewportJobs();
+//        mChart1.setTouchEnabled(false);
         mHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -465,11 +469,6 @@ public class TestCombinedChartActivity extends DemoBase {
         candleDataSet.getValues().addAll(newList);
         candleDataSet.getValues().addAll(oldList);
 
-        candleDataSet.notifyDataSetChanged();
-        candleData.notifyDataChanged();
-        combinedData.notifyDataChanged();
-        mChart1.notifyDataSetChanged();
-
 
         //通过前后数据的比例，计算出新的缩放参数
         float ratio = (float) candleDataSet.getEntryCount() / oldCount;
@@ -478,18 +477,25 @@ public class TestCombinedChartActivity extends DemoBase {
         float newScaleMaxX = ratio * oldScaleMaxX;
         float newScaleX = ratio * oldScaleX;
 
+
+        candleDataSet.notifyDataSetChanged();
+        candleData.notifyDataChanged();
+        combinedData.notifyDataChanged();
+        mChart1.notifyDataSetChanged();
         mChart1.setScaleMinima(newScaleX, 1);//避免数据修改后改变缩放表现
+
         mChart1.moveViewTo(newCount - mChart1.getXAxis().getSpaceMin(), 0, YAxis.AxisDependency.RIGHT);
 
         mChart1.setScaleMinima(newScaleMinX, 1);
         mChart1.setScaleMaxima(newScaleMaxX, 1);
-//        zoom(candleDataSet.getEntryCount(), oldMin);
 
         String[] values = new String[candleDataSet.getEntryCount()];
         for (int i = 0; i < values.length; i++) {
             values[i] = "x" + (values.length - i);
         }
         mChart1.getXAxis().setValueFormatter(new IndexAxisValueFormatter(values));
+
+        mChart1.setTouchEnabled(true);
     }
 
     private int iii = 5;
@@ -539,7 +545,7 @@ public class TestCombinedChartActivity extends DemoBase {
                     mIsCanLoad = false;
                     //加载更多数据的操作
                     Log.i(TAG, "onChartGestureEnd: loadloadloadload1" + leftX);
-                    loadMore();
+//                    delayLoadMore();
                 }
             }
         }
@@ -584,7 +590,7 @@ public class TestCombinedChartActivity extends DemoBase {
                     mIsCanLoad = false;
                     //加载更多数据的操作
                     Log.i(TAG, "onChartGestureEnd: loadloadloadload2" + leftX);
-                    loadMore();
+//                    delayLoadMore();
                 }
             }
         }
