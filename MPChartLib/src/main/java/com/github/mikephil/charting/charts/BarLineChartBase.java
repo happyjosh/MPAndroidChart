@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.MotionEvent;
 
 import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis.XAxisPosition;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.components.YAxis.AxisDependency;
@@ -1677,10 +1678,56 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
     //////////////////支持悬浮的label标注点
 
     private FloatLabel mRightFloatYLabel;
+    private LimitLine mRightFloatYLimitLine;
+    private FloatLimitLineConfig mFloatLimitLineConfig;
     private float mFloatYValue = 0f;
 
+    /**
+     * 设置悬浮的Y值，会调用刷新，影响FloatYLabel和FloatYLimitLine
+     * @param floatYValue
+     */
     public void setFloatYValue(float floatYValue) {
         mFloatYValue = floatYValue;
+
+        //TODO 只处理了right的情况
+        AxisBase axis = getAxisRight();
+        if (axis != null) {
+            //添加新的悬浮线
+            axis.removeLimitLine(mRightFloatYLimitLine);
+            mRightFloatYLimitLine = createRightFloatYLimitLine(floatYValue);
+            axis.addLimitLine(mRightFloatYLimitLine);
+        }
+
+        postInvalidate();//刷新一次View才能生效
+    }
+
+    /**
+     * 生成一个新的悬浮线
+     *
+     * @param value
+     * @return
+     */
+    private LimitLine createRightFloatYLimitLine(float value) {
+        LimitLine limitLine = new LimitLine(value);
+        if (mFloatLimitLineConfig == null) {
+            return limitLine;
+        }
+
+        limitLine.setLineColor(mFloatLimitLineConfig.getLineColor());
+        limitLine.setLineWidth(mFloatLimitLineConfig.getLineWidth());
+        boolean enableDashLine = mFloatLimitLineConfig.isEnableDashLine();
+        if (enableDashLine) {
+            limitLine.enableDashedLine(mFloatLimitLineConfig.getDashLineLength(),
+                    mFloatLimitLineConfig.getDashSpaceLength(), mFloatLimitLineConfig.getDashPhase());
+        } else {
+            limitLine.disableDashedLine();
+        }
+
+        return limitLine;
+    }
+
+    public void setFloatLimitLineConfig(FloatLimitLineConfig floatLimitLineConfig) {
+        mFloatLimitLineConfig = floatLimitLineConfig;
     }
 
     public void setRightFloatYLabel(FloatLabel currentMarkView) {
