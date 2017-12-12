@@ -14,6 +14,7 @@ import android.view.View;
 import com.github.mikephil.charting.charts.Chart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.FloatLabel;
+import com.github.mikephil.charting.charts.FloatLimitLineConfig;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -52,6 +53,9 @@ public class TestCombinedChartActivity extends DemoBase {
     private CombinedChart mChart1;
     private CombinedChart mChart2;
 
+
+    int testLimitValue = 80;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -83,6 +87,16 @@ public class TestCombinedChartActivity extends DemoBase {
             @Override
             public void onClick(View v) {
                 mChart1.getXAxis().setAxisMinimum(-0.5f);
+
+//                YAxis yAxis = mChart1.getAxis(YAxis.AxisDependency.RIGHT);
+//                yAxis.removeLimitLine(limitLine);
+//                testLimitValue++;
+//                limitLine = new LimitLine(testLimitValue);
+//                yAxis.addLimitLine(limitLine);
+//                mChart1.postInvalidate();
+
+                testLimitValue++;
+                mChart1.setFloatYValue(testLimitValue);
             }
         });
     }
@@ -226,11 +240,20 @@ public class TestCombinedChartActivity extends DemoBase {
         //TODO test
 //        mChart1.setScaleMinima(0.5f, 0.5f);
 //        mChart1.setScaleMaxima(5f, 5f);
-        mChart1.setFloatYValue(100);
         mChart1.setAutoScaleMinMaxEnabled(true);
         FloatLabel yLabel = new FloatLabel(getApplicationContext());
         yLabel.getLabelText().setBackgroundColor(ContextCompat.getColor(getApplicationContext(), R.color.blue));
         mChart1.setRightFloatYLabel(yLabel);
+
+        FloatLimitLineConfig floatLimitLineConfig = new FloatLimitLineConfig();
+        floatLimitLineConfig.setLineColor(ContextCompat.getColor(getApplicationContext(), android.R.color.black));
+        floatLimitLineConfig.setLineWidth(2);
+        floatLimitLineConfig.setEnableDashLine(true);
+        floatLimitLineConfig.setDashLineLength(20);
+        floatLimitLineConfig.setDashSpaceLength(40);
+        floatLimitLineConfig.setDashPhase(0);
+
+        mChart1.setFloatLimitLineConfig(floatLimitLineConfig);
 
         setSelectMark(mChart1, true);
 
