@@ -12,8 +12,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 17
-        versionName '1.1.6'
+        versionCode 18
+        versionName '1.1.7'
     }
     buildTypes {
         release {
@@ -75,7 +75,7 @@ artifacts {
 
 def siteUrl = 'https://github.com/happyjosh/XXXRecyclerView'      // 项目的主页
 def gitUrl = 'https://github.com/happyjosh/MPAndroidChart.git'   // Git仓库的url
-version = "1.1.6"//显示的版本号，每次版本更迭需要同步更新
+version = "1.1.7"//显示的版本号，每次版本更迭需要同步更新
 group = "com.github.PhilJay.XXX" // Maven Group ID for the artifact，一般填你唯一的包名
 install {
     repositories.mavenInstaller {

@@ -1734,6 +1734,18 @@ public abstract class BarLineChartBase<T extends BarLineScatterCandleBubbleData<
         mRightFloatYLabel = currentMarkView;
     }
 
+    public FloatLabel getRightFloatYLabel() {
+        return mRightFloatYLabel;
+    }
+
+    public LimitLine getRightFloatYLimitLine() {
+        return mRightFloatYLimitLine;
+    }
+
+    public FloatLimitLineConfig getFloatLimitLineConfig() {
+        return mFloatLimitLineConfig;
+    }
+
     private void drawRightFloatYLabel(Canvas canvas) {
         if (mRightFloatYLabel == null) {
             return;
